@@ -25,5 +25,5 @@ Deploy $DEWO on BSC (Chain ID: 56)<br>
 `npx truffle migrate --network $network --reset --f 1 --to 1`<br>
 Verify the contract:<br>
 `npx truffle run verify DecentraWorld@contractaddress  --network testnet`<br>
-`npx truffle run verify DecentraWorld@contractaddress  --network bsc
+`npx truffle run verify DecentraWorld@contractaddress  --network bsc`
 
