@@ -777,10 +777,14 @@ contract DecentraWorld_Testnet is Context, IERC20, IERC20Metadata, Ownable {
             developmentFee = txTaxes["developmentSellTax"];
             coreteamFee = txTaxes["coreteamSellTax"];
             daoandfarmingFee = txTaxes["daoandfarmingSellTax"];
+
+            // Calculate the balance after this transaction
+            uint newBalanceAmount = fromBalance.sub(amount);
+
             // Transaction Tax Tiers 2 & 3 - Discounted Rate
-            if(fromBalance >= taxTiers[2].amount && fromBalance < taxTiers[3].amount) {
+            if(newBalanceAmount >= taxTiers[2].amount && newBalanceAmount < taxTiers[3].amount) {
                 taxDiscount = taxTiers[2].taxDiscount;
-            } else if(fromBalance >= taxTiers[3].amount) {
+            } else if(newBalanceAmount >= taxTiers[3].amount) {
                 taxDiscount = taxTiers[3].taxDiscount;
             }
         }
