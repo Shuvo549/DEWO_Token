@@ -14,12 +14,8 @@ module.exports = {
    */
                
   // Easily verify any contract on any of our supported chains.
-  // npx truffle run verify DeMixFactory@ DeMixToken@ --network testnet
-  
-  // npx truffle run verify DeMixToken@ --network testnet
-  // npx truffle run verify DeMixFactory@ DeMixToken@ Verifier@ --network testnet
-  
-  // npx truffle run verify ContractName@ContractAddress --network $NetworkName
+  // npx truffle run verify ContractName@0xaddress --network testnet
+
   // API Keys of explorers
  plugins: [
     'truffle-plugin-verify'
