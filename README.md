@@ -7,9 +7,9 @@ This Repo isn't ready just yet, come back soon!
 ## Requirements
 
 
-`node v16.14.2(LTS)`
-`npm @Latest`
-`npm install -g npx`
+`node v16.14.2(LTS)`<br>
+`npm @Latest`<br>
+`npm install -g npx`<br>
 
  
 
@@ -19,9 +19,11 @@ This Repo isn't ready just yet, come back soon!
 
 `npm install`<br>
 `npm run build`<br>
+Deploy $DEWO on BSC Testnet (Chain ID: 97)<br>
+`npx truffle migrate --network $network --reset --f 2 --to 2`<br>
+Deploy $DEWO on BSC (Chain ID: 56)<br>
 `npx truffle migrate --network $network --reset --f 1 --to 1`<br>
-Pick any network: bsc, testnet, matic, avalanche, fanton, cronos, matic<br>
-`./flatss/` - a testnet ready DecentraWorld.sol contract (with the correct PCS router & pair) 
 Verify the contract:<br>
-`npx truffle run verify DecentraWorld@contractaddress  --network $network`
+`npx truffle run verify DecentraWorld@contractaddress  --network testnet`<br>
+`npx truffle run verify DecentraWorld@contractaddress  --network bsc
 

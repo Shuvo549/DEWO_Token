@@ -210,7 +210,7 @@ interface IERC20Metadata is IERC20 {
     function symbol() external view returns (string memory);
 }
 
-contract DecentraWorld is Context, IERC20, IERC20Metadata, Ownable {
+contract DecentraWorld_Testnet is Context, IERC20, IERC20Metadata, Ownable {
     using SafeMath for uint256;
 	// DecentraWorld - $DEWO
     uint256 _totalSupply;
