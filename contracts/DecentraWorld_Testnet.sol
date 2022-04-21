@@ -334,7 +334,7 @@ contract DecentraWorld_Testnet is Context, IERC20, IERC20Metadata, Ownable {
         taxTiers[0].amount = 100000 * (10 ** decimals()); 
 
         // Get a 100% discount on purchase tax taxes
-        taxTiers[1].taxDiscount = 100;
+        taxTiers[1].taxDiscount = 99;
         // When buying over 0.4% of total supply (400,000 $DEWO)
         taxTiers[1].amount = 400000 * (10 ** decimals());
 
@@ -500,7 +500,7 @@ contract DecentraWorld_Testnet is Context, IERC20, IERC20Metadata, Ownable {
 
     // Set Buy Tax Tiers
     function setBuyTaxTiers(uint _discount1, uint _amount1, uint _discount2, uint _amount2) external onlyOwner {
-        require(_discount1 > 0 && _discount2 > 0 && _amount1 > 0 && _amount2 > 0, "Values have to be bigger than zero!");
+        require(_discount1 > 0 && _discount1 < 100 && _discount2 > 0 && _discount2 < 100 && _amount1 > 0 && _amount2 > 0, "Values have to be bigger than zero!");
         taxTiers[0].taxDiscount = _discount1;
         taxTiers[0].amount = _amount1;
         taxTiers[1].taxDiscount = _discount2;
@@ -510,7 +510,7 @@ contract DecentraWorld_Testnet is Context, IERC20, IERC20Metadata, Ownable {
 
     // Set Sell Tax Tiers
         function setSellTaxTiers(uint _discount3, uint _amount3, uint _discount4, uint _amount4) external onlyOwner {
-        require(_discount3 > 0 && _discount4 > 0 && _amount3 > 0 && _amount4 > 0, "Values have to be bigger than zero!");
+        require(_discount3 > 0 && _discount3 < 100 && _discount4 > 0 && _discount4 < 100 && _amount3 > 0 && _amount4 > 0, "Values have to be bigger than zero!");
         taxTiers[2].taxDiscount = _discount3;
         taxTiers[2].amount = _amount3;
         taxTiers[3].taxDiscount = _discount4;
