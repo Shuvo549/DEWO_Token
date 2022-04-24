@@ -36,7 +36,7 @@ Verify the contract on BSC:<br>
 ## Deploy DecentraMix_Multichain.sol cross-chain token 
 
 Available for AVAX, FTM, CRO, ETH, MATIC, TESTNET, and more can be added at `truffle-config.js` <br>
-Deploy $DEWO on any of the supported networks by replacing $NETWORK with its name.
+Deploy $DEWO on any of the supported networks by replacing $NETWORK with its name.<br>
 `npx truffle migrate --network $NETWORK --reset --f 2 --to 2`<br> 
 
 <br><br>
