@@ -29,12 +29,12 @@
 */
 // SPDX-License-Identifier: MIT
 
+pragma solidity ^0.8.7;
+
 import "@OpenZeppelin/contracts/utils/math/SafeMath.sol";
 import "@OpenZeppelin/contracts/access/Ownable.sol";
 import "@OpenZeppelin/contracts/utils/Context.sol"; 
- 
 
-pragma solidity ^0.8.7;
 
 /**
  * @dev Interfaces
@@ -210,7 +210,7 @@ interface IERC20Metadata is IERC20 {
     function symbol() external view returns (string memory);
 }
 
-contract DecentraWorld_Testnet is Context, IERC20, IERC20Metadata, Ownable {
+contract DecentraWorld_Multichain is Context, IERC20, IERC20Metadata, Ownable {
     using SafeMath for uint256;
 	// DecentraWorld - $DEWO
     uint256 _totalSupply;
@@ -228,7 +228,9 @@ contract DecentraWorld_Testnet is Context, IERC20, IERC20Metadata, Ownable {
     address public marketingAddress;
     address public developmentAddress;
     address public coreteamAddress;
-
+    // Address of the bridge controling the mint/burn of the cross-chain 
+    address public MPC;
+    mapping (address => uint256) public override balanceOf;
     // taxes for differnet levels
     struct TaxLevels {
         uint taxDiscount;
@@ -261,14 +263,12 @@ contract DecentraWorld_Testnet is Context, IERC20, IERC20Metadata, Ownable {
         _name = "DecentraWorld";
         _symbol = "$DEWO";
         _decimals = 18;
-        _totalSupply = 100000000 * (10 ** decimals());
-
         //Temporary Tax Receivers
         daoandfarmingAddress = msg.sender;
         marketingAddress = msg.sender;
         developmentAddress = msg.sender;
         coreteamAddress = msg.sender;
-
+         
         // Exclude From Taxes By Default
         excludeFromTax[msg.sender] = true;
         excludeFromTax[daoandfarmingAddress] = true;
@@ -283,6 +283,8 @@ contract DecentraWorld_Testnet is Context, IERC20, IERC20Metadata, Ownable {
         exclueFromMaxTx[developmentAddress] = true;
         exclueFromMaxTx[coreteamAddress] = true;
 
+        // Cross-Chain Bridge Temp Settings
+        MPC = msg.sender;
 
         // Transaction taxes apply solely on swaps (buys/sells)
         // Tier 1 - Default Buy Fee [6% Total]
@@ -358,13 +360,17 @@ contract DecentraWorld_Testnet is Context, IERC20, IERC20Metadata, Ownable {
         txSettings.sellMaxTx = _totalSupply.div(800);
 
 
+        /**
+        Removed from the cross-chain $DEWO token, the pair settings were replaced with a function,
+        and the mint function of 100,000,000 $DEWO to deployer was replaced with 0. Since this token is
+        a cross-chain token and not the native EVM chain where $DEWO was deployed (BSC) then there's no need
+        in any additional supply. The Multichain.org bridge will call burn/mint functions accordingly. 
+        
+        ---
         // Create a PancakeSwap (DEX) Pair For $DEWO 
-        address WBNB = 0x094616F0BdFB0b526bD735Bf66Eca0Ad254ca81F; // Wrapped BNB on Binance Smart Chain
-        // Testnet WBNB = 0x094616F0BdFB0b526bD735Bf66Eca0Ad254ca81F
-        // BSC mainnet WBNB = 0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c
-        address _router = 0xD99D1c33F9fC3444f8101754aBC46c52416550D1; // PancakeSwap Router (ChainID: 56 = BSC)
-        // Testnet Router: 0xD99D1c33F9fC3444f8101754aBC46c52416550D1
-        // Mainnet BSC Router: 0x10ED43C718714eb63d5aA57B78B54704E256024E
+        // This will be used to track the price of $DEWO & charge taxes to all pool buys/sells
+        address WBNB = 0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c; // Wrapped BNB on Binance Smart Chain
+        address _router = 0x10ED43C718714eb63d5aA57B78B54704E256024E; // PancakeSwap Router (ChainID: 56 = BSC)
         router = IDEXRouter(_router);
         pair = IDEXFactory(router.factory()).createPair(WBNB, address(this));
         _allowances[address(this)][address(router)] = _totalSupply;
@@ -373,6 +379,67 @@ contract DecentraWorld_Testnet is Context, IERC20, IERC20Metadata, Ownable {
         // Send 100,000,000 $DEWO tokens to the dev (one time only)
         _balances[msg.sender] = _totalSupply;
         emit Transfer(address(0), msg.sender, _totalSupply);
+
+         */
+    }
+
+
+
+    // onlyAuth = allow MPC contract address to call certain functions
+    // The MPC = Multichain bridge contract of each chain
+    modifier onlyAuth() {
+        require(msg.sender == mmpc(), "DecentraWorld: FORBIDDEN");
+        _;
+    }
+  
+      function mmpc() public view returns (address) {
+        return MPC;
+    }
+
+    // This can only be done once by the deployer, once the MPC is set only the MPC can call this function again.
+    function setMPC(address _setmpc) external onlyAuth {
+        MPC = _setmpc;
+    }
+    
+    // Mint will be used when individuals cross-chain $DEWO from one chain to another
+    function mint(address to, uint256 amount) external onlyAuth returns (bool) {
+        _mint(to, amount);
+        return true;
+    }
+
+    // The burn function will be used to burn tokens that were cross-chained into another EVM chain
+    function burn(address from, uint256 amount) external onlyAuth returns (bool) {
+        require(from != address(0), "DecentraWorld: address(0x0)");
+        _burn(from, amount);
+        return true;
+    }
+
+    function Swapin(bytes32 txhash, address account, uint256 amount) public onlyAuth returns (bool) {
+        _mint(account, amount);
+        emit LogSwapin(txhash, account, amount);
+        return true;
+    }
+
+    function Swapout(uint256 amount, address bindaddr) public returns (bool) {
+        require(bindaddr != address(0), "DecentraWorld: address(0x0)");
+        _burn(msg.sender, amount);
+        emit LogSwapout(msg.sender, bindaddr, amount);
+        return true;
+    }
+    
+    event LogSwapin(bytes32 indexed txhash, address indexed account, uint amount);
+    event LogSwapout(address indexed account, address indexed bindaddr, uint amount);
+      
+
+    // Set the router & native token of each chain to tax the correct LP POOL of $DEWO
+    // This will always be the most popular DEX on the chain + its native token. 
+    function setDEXPAIR(address _nativetoken, address _nativerouter) external onlyOwner {
+        // Create a  DEX Pair For $DEWO 
+        // This will be used to track the price of $DEWO & charge taxes to all pool buys/sells
+        router = IDEXRouter(_nativerouter);
+        pair = IDEXFactory(router.factory()).createPair(_nativetoken, address(this));
+        _allowances[address(this)][address(router)] = _totalSupply;
+        approve(_nativerouter, _totalSupply);
     }
 
     // Set Buy Taxes
@@ -608,11 +675,7 @@ contract DecentraWorld_Testnet is Context, IERC20, IERC20Metadata, Ownable {
     function totalSupply() public view virtual override returns (uint256) {
         return _totalSupply;
     }
-
-    function balanceOf(address account) public view virtual override returns (uint256) {
-        return _balances[account];
-    }
-
+ 
     /**
      * @dev See {IERC20-transfer}.
      *
@@ -720,6 +783,42 @@ contract DecentraWorld_Testnet is Context, IERC20, IERC20Metadata, Ownable {
         return true;
     }
 
+    /** @dev Creates `amount` tokens and assigns them to `account`, increasing
+     * the total supply.
+     *
+     * Emits a {Transfer} event with `from` set to the zero address.
+     *
+     * Requirements
+     *
+     * - `to` cannot be the zero address.
+     */
+    function _mint(address account, uint256 amount) internal {
+        require(account != address(0), "ERC20: mint to the zero address");
+
+        _totalSupply += amount;
+        balanceOf[account] += amount;
+        emit Transfer(address(0), account, amount);
+    }
+
+    /**
+     * @dev Destroys `amount` tokens from `account`, reducing the
+     * total supply.
+     *
+     * Emits a {Transfer} event with `to` set to the zero address.
+     *
+     * Requirements
+     *
+     * - `account` cannot be the zero address.
+     * - `account` must have at least `amount` tokens.
+     */
+    function _burn(address account, uint256 amount) internal {
+        require(account != address(0), "ERC20: burn from the zero address");
+
+        balanceOf[account] -= amount;
+        _totalSupply -= amount;
+        emit Transfer(account, address(0), amount);
+    }
+
     /**
      * @dev Moves `amount` of tokens from `sender` to `recipient`.
      *
@@ -754,6 +853,7 @@ contract DecentraWorld_Testnet is Context, IERC20, IERC20Metadata, Ownable {
         bool hasTaxes = true;
 
         // Buys from PancakeSwap's $DEWO pool
+
         if(from == pair) {
             checkBuyTxLimit(to, amount); 
             setRecentTx(false, to, amount);
@@ -777,10 +877,8 @@ contract DecentraWorld_Testnet is Context, IERC20, IERC20Metadata, Ownable {
             developmentFee = txTaxes["developmentSellTax"];
             coreteamFee = txTaxes["coreteamSellTax"];
             daoandfarmingFee = txTaxes["daoandfarmingSellTax"];
-
             // Calculate the balance after this transaction
             uint newBalanceAmount = fromBalance.sub(amount);
-
             // Transaction Tax Tiers 2 & 3 - Discounted Rate
             if(newBalanceAmount >= taxTiers[2].amount && newBalanceAmount < taxTiers[3].amount) {
                 taxDiscount = taxTiers[2].taxDiscount;
@@ -788,6 +886,9 @@ contract DecentraWorld_Testnet is Context, IERC20, IERC20Metadata, Ownable {
                 taxDiscount = taxTiers[3].taxDiscount;
             }
         }
+        
+
+
         unchecked {
             _balances[from] = fromBalance - amount;
         }

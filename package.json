@@ -1,12 +1,12 @@
 {
-  "name": "circuits",
+  "name": "dewo",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build:circuit": "mkdir -p build/circuits",
+    "build:dewo": "mkdir -p build/dewo",
     "build:contract": "npx truffle compile",
-    "build": "npm run build:circuit && npm run build:contract",
+    "build": "npm run build:dewo && npm run build:contract",
     "test": "npx truffle test",
     "migrate": "npm run migrate:kovan",
     "migrate:dev": "npx truffle migrate --network development --reset",
