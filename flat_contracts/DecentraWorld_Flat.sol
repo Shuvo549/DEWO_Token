@@ -27,11 +27,9 @@
 *░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 *
 */
-// SPDX-License-Identifier: MIT
 
 // File: @OpenZeppelin/contracts/utils/math/SafeMath.sol
 
-// SPDX-License-Identifier: MIT
 // OpenZeppelin Contracts v4.4.1 (utils/math/SafeMath.sol)
 
 pragma solidity ^0.8.0;
@@ -261,7 +259,6 @@ library SafeMath {
 
 // File: @OpenZeppelin/contracts/utils/Context.sol
 
-// SPDX-License-Identifier: MIT
 // OpenZeppelin Contracts v4.4.1 (utils/Context.sol)
 
 pragma solidity ^0.8.0;
@@ -288,7 +285,6 @@ abstract contract Context {
 
 // File: @OpenZeppelin/contracts/access/Ownable.sol
 
-// SPDX-License-Identifier: MIT
 // OpenZeppelin Contracts v4.4.1 (access/Ownable.sol)
 
 pragma solidity ^0.8.0;
