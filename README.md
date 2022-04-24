@@ -2,7 +2,7 @@
 
 - Read the security audit at [SmartContract_Audit_Solidproof_DecentraWorld.pdf]
 - Download this folder to your local machine.
-
+<br><br>
 
 ## Requirements
 
@@ -12,7 +12,7 @@
 `npm install -g npx`<br>
 
 
- 
+ <br><br>
 
 ## Initialize
 
@@ -20,7 +20,7 @@
 2. `npm run build`
 3. `cp .env.example .env`
 
-
+<br><br>
 
 
 ## Deploy DecentraMix.sol native token 
@@ -31,7 +31,7 @@ Verify the contract on BSC:<br>
 `npx truffle run verify DecentraWorld@contractaddress  --network bsc`<br>
 
 
-
+<br><br>
 
 ## Deploy DecentraMix_Multichain.sol cross-chain token 
 
@@ -39,7 +39,7 @@ Available for AVAX, FTM, CRO, ETH, MATIC, TESTNET, and more can be added at `tru
 Deploy $DEWO on any of the supported networks by replacing $NETWORK with its name.
 `npx truffle migrate --network $NETWORK --reset --f 2 --to 2`<br> 
 
-
+<br><br>
 
 
 ## Verify DecentraMix.sol through Truffle
@@ -47,10 +47,11 @@ Deploy $DEWO on any of the supported networks by replacing $NETWORK with its nam
 2. Edit `secret.json` parameters (API keys for each explorer)
 3. `npx truffle run verify DecentraWorld@contractaddress  --network $NETWORK`
 
+<br><br>
 
 ## Verify DecentraMix.sol Through Explorer
-npm install truffle-flattener -g
-npx truffle-flattener ./contracts/DecentraMix.sol > ./contracts/DecentraMix_Flat.sol
-npx truffle-flattener ./contracts/DecentraMix_Multichain.sol > ./contracts/DecentraMix_Multichain_Flat.sol
-Go on the relevant explorer (E.g.: cronoscan.com)
-Confirm your contract as a single solidity file 
+1. `npm install truffle-flattener -g`
+2. `npx truffle-flattener ./contracts/DecentraMix.sol > ./contracts/DecentraMix_Flat.sol`
+3. `npx truffle-flattener ./contracts/DecentraMix_Multichain.sol > ./contracts/DecentraMix_Multichain_Flat.sol`
+4. Go on the relevant explorer (E.g.: cronoscan.com) <br>
+5. Confirm your contract as a single solidity file <br>
